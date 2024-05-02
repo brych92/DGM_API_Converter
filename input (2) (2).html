@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+
+    <title>Відправка файлу та збереження GeoJSON</title>
+
+    <style>
+
+
+/*summary {
+  background-color: #aa2310;
+  color: black;
+  padding: 5px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}*/
+
+
+
+
+    </style>
+    <script>
+        let serverResponse = ""; // Змінна для зберігання відповіді
+let api_srid_list = [ // Змінна зі списком СК з переліку API ДГМ
+    {
+        "id": "4284",
+        "epsg": 4284,
+        "text": "CK-42 (EPSG:4284)"
+    },
+    {
+        "id": "700001",
+        "epsg": 9831,
+        "text": "МСК-01 (АР Крим) (EPSG:9831)"
+    },
+    {
+        "id": "700002",
+        "epsg": 9832,
+        "text": "МСК-05 (Вінницька область) (EPSG:9832)"
+    },
+    {
+        "id": "700003",
+        "epsg": 9833,
+        "text": "МСК-07 (Волинська область) (EPSG:9833)"
+    },
+    {
+        "id": "700004",
+        "epsg": 9834,
+        "text": "МСК-12 (Дніпропетровська область) (EPSG:9834)"
+    },
+    {
+        "id": "700005",
+        "epsg": 9835,
+        "text": "МСК-14 (Донецька область) (EPSG:9835)"
+    },
+    {
+        "id": "700006",
+        "epsg": 9836,
+        "text": "МСК-18 (Житомирська область) (EPSG:9836)"
+    },
+    {
+        "id": "700007",
+        "epsg": 9837,
+        "text": "МСК-21 (Закарпатська область) (EPSG:9837)"
+    },
+    {
+        "id": "700008",
+        "epsg": 9838,
+        "text": "МСК-23 (Запорізька область) (EPSG:9838)"
+    },
+    {
+        "id": "700009",
+        "epsg": 9839,
+        "text": "МСК-26 (Івано-Франківська область) (EPSG:9839)"
+    },
+    {
+        "id": "700010",
+        "epsg": 9840,
+        "text": "МСК-35 (Кіровоградська область) (EPSG:9840)"
+    },
+    {
+        "id": "700011",
+        "epsg": 9821,
+        "text": "МСК-32 (Київська область) (EPSG:9821)"
+    },
+    {
+        "id": "700012",
+        "epsg": 9864,
+        "text": "МСК-80 (м. Київ) (EPSG:9864)"
+    },
+    {
+        "id": "700013",
+        "epsg": 9841,
+        "text": "МСК-44 (Луганська область) (EPSG:9841)"
+    },
+    {
+        "id": "700014",
+        "epsg": 9851,
+        "text": "МСК-46 (Львівська область) (EPSG:9851)"
+    },
+    {
+        "id": "700015",
+        "epsg": 9852,
+        "text": "МСК-48 (Миколаївська область) (EPSG:9852)"
+    },
+    {
+        "id": "700016",
+        "epsg": 9853,
+        "text": "МСК-51 (Одеська область) (EPSG:9853)"
+    },
+    {
+        "id": "700017",
+        "epsg": 9854,
+        "text": "МСК-53 (Полтавська область) (EPSG:9854)"
+    },
+    {
+        "id": "700018",
+        "epsg": 9855,
+        "text": "МСК-56 (Рівненська область) (EPSG:9855)"
+    },
+    {
+        "id": "700019",
+        "epsg": 9856,
+        "text": "МСК-59 (Сумська область) (EPSG:9856)"
+    },
+    {
+        "id": "700020",
+        "epsg": 9857,
+        "text": "МСК-61 (Тернопільська область) (EPSG:9857)"
+    },
+    {
+        "id": "700021",
+        "epsg": 9858,
+        "text": "МСК-63 (Харківська область) (EPSG:9858)"
+    },
+    {
+        "id": "700022",
+        "epsg": 9859,
+        "text": "МСК-65 (Херсонська область) (EPSG:9859)"
+    },
+    {
+        "id": "700023",
+        "epsg": 9860,
+        "text": "МСК-68 (Хмельницька область) (EPSG:9860)"
+    },
+    {
+        "id": "700024",
+        "epsg": 9861,
+        "text": "МСК-71 (Черкаська область) (EPSG:9861)"
+    },
+    {
+        "id": "700025",
+        "epsg": 9862,
+        "text": "МСК-73 (Чернівецька область) (EPSG:9862)"
+    },
+    {
+        "id": "700026",
+        "epsg": 9863,
+        "text": "МСК-74 (Чернігівська область) (EPSG:9863)"
+    },
+    {
+        "id": "700027",
+        "epsg": 9865,
+        "text": "МСК-84 (м. Севастополь) (EPSG:9865)"
+    },
+    {
+        "id": "28404",
+        "epsg": 28404,
+        "text": "СК-42 GK6 зона 4 осьовий меридіан 21° (EPSG:28404)"
+    },
+    {
+        "id": "28405",
+        "epsg": 28405,
+        "text": "СК-42 GK6 зона 5 осьовий меридіан 27° (EPSG:28405)"
+    },
+    {
+        "id": "28406",
+        "epsg": 28406,
+        "text": "СК-42 GK6 зона 6 осьовий меридіан 33° (EPSG:28406)"
+    },
+    {
+        "id": "28407",
+        "epsg": 28407,
+        "text": "СК-42 GK6 зона 7 осьовий меридіан 39° (EPSG:28407)"
+    },
+    {
+        "id": "2582",
+        "epsg": 2582,
+        "text": "СК-42 GK3 осьовий меридіан 21° (EPSG:2582)"
+    },
+    {
+        "id": "2583",
+        "epsg": 2583,
+        "text": "СК-42 GK3 осьовий меридіан 24° (EPSG:2583)"
+    },
+    {
+        "id": "2584",
+        "epsg": 2584,
+        "text": "СК-42 GK3 осьовий меридіан 27° (EPSG:2584)"
+    },
+    {
+        "id": "2585",
+        "epsg": 2585,
+        "text": "СК-42 GK3 осьовий меридіан 30° (EPSG:2585)"
+    },
+    {
+        "id": "2586",
+        "epsg": 2586,
+        "text": "СК-42 GK3 осьовий меридіан 33° (EPSG:2586)"
+    },
+    {
+        "id": "2587",
+        "epsg": 2587,
+        "text": "СК-42 GK3 осьовий меридіан 36° (EPSG:2587)"
+    },
+    {
+        "id": "2588",
+        "epsg": 2588,
+        "text": "СК-42 GK3 осьовий меридіан 39° (EPSG:2588)"
+    }
+]
+
+let sk63_srid_list = // Список з СК63 записаний окремо для реалізації додаткових опцій. Бо за переліком СК в API використовуються коди EPSG (за замовчуванням), але для точного перерахунку потрібні саме службові коди. За замовчуванням МСК використовують службові коди
+[
+
+    {
+        "id": "500001",
+        "epsg": 7825,
+        "text": "СК-63 район X 1 зона (EPSG:7825)"
+    },
+    {
+        "id": "500002",
+        "epsg": 7826,
+        "text": "СК-63 район X 2 зона (EPSG:7826)"
+    },
+    {
+        "id": "500003",
+        "epsg": 7827,
+        "text": "СК-63 район X 3 зона (EPSG:7827)"
+    },
+    {
+        "id": "500004",
+        "epsg": 7828,
+        "text": "СК-63 район X 4 зона (EPSG:7828)"
+    },
+    {
+        "id": "500005",
+        "epsg": 7829,
+        "text": "СК-63 район X 5 зона (EPSG:7829)"
+    },
+    {
+        "id": "500006",
+        "epsg": 7830,
+        "text": "СК-63 район X 6 зона (EPSG:7830)"
+    }
+
+]
+
+let other_srid_list = [
+    {
+        "id": "702582",
+        "epsg": 5577,
+        "text": "УСК-2000 GK3 осьовий меридіан 21° (EPSG:5577)"
+    },
+    {
+        "id": "702583",
+        "epsg": 5578,
+        "text": "УСК-2000 GK3 осьовий меридіан 24° (EPSG:5578)"
+    },
+    {
+        "id": "702584",
+        "epsg": 5579,
+        "text": "УСК-2000 GK3 осьовий меридіан 27° (EPSG:5579)"
+    },
+    {
+        "id": "702585",
+        "epsg": 5580,
+        "text": "УСК-2000 GK3 осьовий меридіан 30° (EPSG:5580)"
+    },
+    {
+        "id": "702586",
+        "epsg": 5581,
+        "text": "УСК-2000 GK3 осьовий меридіан 33° (EPSG:5581)"
+    },
+    {
+        "id": "702587",
+        "epsg": 5582,
+        "text": "УСК-2000 GK3 осьовий меридіан 36° (EPSG:5582)"
+    },
+    {
+        "id": "702588",
+        "epsg": 5583,
+        "text": "УСК-2000 GK3 осьовий меридіан 39° (EPSG:5583)"
+    },
+
+    {
+        "id": "728404",
+        "epsg": 5562,
+        "text": "УСК-2000 GK6 зона 4 осьовий меридіан 21° (EPSG:5562)"
+    },
+    {
+        "id": "728405",
+        "epsg": 5563,
+        "text": "УСК-2000 GK6 зона 4 осьовий меридіан 27° (EPSG:5563)"
+    },
+    {
+        "id": "728406",
+        "epsg": 5564,
+        "text": "УСК-2000 GK6 зона 4 осьовий меридіан 33° (EPSG:5564)"
+    },
+    {
+        "id": "728407",
+        "epsg": 5565,
+        "text": "УСК-2000 GK6 зона 4 осьовий меридіан 39° (EPSG:5565)"
+    },
+    {
+        "id": "728407",
+        "epsg": 5565,
+        "text": "УСК-2000 GK6 зона 4 осьовий меридіан 39° (EPSG:5565)"
+    },
+    {
+        "id": "728407",
+        "epsg": 5565,
+        "text": "УСК-2000 GK6 зона 4 осьовий меридіан 39° (EPSG:5565)"
+    },
+    {
+        "id": "6381",
+        "epsg": 6381,
+        "text": "UCS-2000 / Ukraine TM zone 7 (EPSG:6381)"
+    },
+    {
+        "id": "6382",
+        "epsg": 6382,
+        "text": "UCS-2000 / Ukraine TM zone 8 (EPSG:6382)"
+    },
+    {
+        "id": "6383",
+        "epsg": 6383,
+        "text": "UCS-2000 / Ukraine TM zone 9 (EPSG:6383)"
+    },
+    {
+        "id": "6384",
+        "epsg": 6384,
+        "text": "UCS-2000 / Ukraine TM zone 10 (EPSG:6384)"
+    },
+    {
+        "id": "6385",
+        "epsg": 6385,
+        "text": "UCS-2000 / Ukraine TM zone 11 (EPSG:6385)"
+    },
+    {
+        "id": "6386",
+        "epsg": 6386,
+        "text": "UCS-2000 / Ukraine TM zone 12 (EPSG:6386)"
+    },
+    {
+        "id": "6387",
+        "epsg": 6387,
+        "text": "UCS-2000 / Ukraine TM zone 13 (EPSG:6387)"
+    },
+    {
+        "id": "5561",
+        "epsg": 5561,
+        "text": "UCS-2000 Geographic (2D) (EPSG:5561)"
+    },
+    {
+        "id": "5560",
+        "epsg": 5560,
+        "text": "UCS-2000 Geographic (3D) (EPSG:5560)"
+    },
+    {
+        "id": "5558",
+        "epsg": 5558,
+        "text": "UCS-2000 Geocentric (EPSG:5558)"
+    },
+    {
+        "id": "4179",
+        "epsg": 4179,
+        "text": "Pulkovo 1942(58)  Geographic (3D) (EPSG:4179)"
+    },
+    {
+        "id": "4178",
+        "epsg": 4178,
+        "text": "Pulkovo 1942(83) Geographic (3D) (EPSG:4178)"
+    },
+    {
+        "id": "4326",
+        "epsg": 4326,
+        "text": "WGS 84 (EPSG:4326)"
+    },
+    {
+        "id": "3857",
+        "epsg": 3857,
+        "text": "WGS 84 / Pseudo-Mercator (EPSG:3857)"
+    }
+]
+
+
+
+
+        function uploadJsonFile(inSRID, outSRID, SRID_as_GET_parameter) {
+        console.log(inSRID, outSRID, SRID_as_GET_parameter)
+
+            const fileInput = document.getElementById("fileInput");
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Будь ласка, виберіть файл");
+                return;
+            }
+
+            const reader = new FileReader();
+
+            reader.onload = function(event) {
+                const jsonContent = JSON.parse(event.target.result); //ДОДАТИ СЮДИ ПЕРЕВІРКУ
+                console.log(typeof(jsonContent))
+
+
+                let request_data = new Object();
+                request_data['geojson'] = jsonContent
+
+                let url = null
+
+                if (SRID_as_GET_parameter === true) {
+                url = `https://dgm.gki.com.ua/api-user/transform-file?inSRID=${inSRID}&outSRID=${outSRID}`
+                console.log(`url is ${url}`)
+                }
+
+                else {
+                url = 'https://dgm.gki.com.ua/api-user/transform-file'
+                console.log(`url is ${url}`)
+                request_data['outSRID'] = outSRID
+                request_data['inSRID'] = inSRID
+                }
+                console.log(`url is ${url}`)
+
+
+                console.log(request_data)
+                fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(request_data),
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Помилка при відправленні запиту");
+                    }
+                    return response.json(); // Отримати відповідь як JSON
+                })
+                .then(data => {
+                    serverResponse = JSON.stringify(data, null, 2); // Зберегти та форматувати відповідь
+                    const responseDiv = document.getElementById("response");
+                    console.log(data)
+                    responseDiv.textContent = serverResponse; // Відобразити відформатований JSON
+                })
+                .catch(error => {
+                    console.error(error);
+                    alert("Сталася помилка: " + error.message);
+                });
+            };
+
+            reader.onerror = function() {
+                alert("Помилка читання файлу");
+            };
+
+            reader.readAsText(file); // Читання вмісту файлу
+        }
+
+        function saveToGeoJSON() {
+            if (!serverResponse) {
+                alert("Відповідь порожня, нічого зберігати");
+                return;
+            }
+
+            const blob = new Blob([serverResponse], { type: "application/geojson" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "response.geojson"; // Зберегти файл
+            link.click();
+        }
+    </script>
+</head>
+<body>
+    <h1>Трансформація координат файлу GeoJSON через <a href="https://dgm.gki.com.ua/docs/api/transform.html" target="_blank">API ДГМ</a></h1>
+   <!-- <table style="width:100%">
+    <tr>-->
+<!--     <td style="width:50%; vertical-align: top; display: inline-block"> -->
+    <h2 style="display: inline-block">
+    1. Оберіть початкову та кінцеву системи координат (СК)
+    </h2>
+    <br>
+<p style="padding:5px; background-color:yellow; border-radius:5px; margin-top:0px; display: inline-block">Примітка! Для кінцевих СК за замовчуванням використовуються коди EPSG (для змін застосуйте відповідну опцію). <br>
+    <b>УВАГА!!!</b> Якщо Ви застосували якусь опцію, то оберіть потрібну СК зі списку <b>заново</b></p>
+    <br>
+    <label for="inSRID_select">Початкова СК:</label>
+    <select id="inSRID_select" onfocus="inSRID_select_element_onFocus()" onchange="console.log(this.value)">
+    <option>Виберіть початкову СК</option>
+    <select>
+    <br>
+    <label for="outSRID_select">Кінцева СК:</label>
+    <select id="outSRID_select" onfocus="outSRID_select_element_onFocus()">
+    <option>Виберіть кінцеву СК</option>
+    <select>
+<!--     </td> -->
+<!--     <td style="width:50%; vertical-align: top; display: inline-block"> -->
+    <h2>
+    2. Оберіть та відправте файл .geojson
+    </h2>
+    <input type="file" id="fileInput" accept=".*" />
+    <button id="send_button">Відправити файл</button>
+   <!-- </td>
+    </tr>
+    <tr>
+    <td>-->
+
+    <br>
+
+    <p style="padding:5px; background-color:yellow; border-radius:5px; margin-bottom:0px">Примітка! Для "точного" перерахунку для початкових СК застосовуються службові коди, а для кінцевих СК лише коди EPSG.</p>
+     <input type="checkbox" id="checkbox_pretty_transformation">
+    <label for="checkbox_pretty_transformation"><h2 style="display: inline-block">"Точний" перерахунок (інші опції ігноруються)</h2></label><br>
+
+ <!--   </td>
+    </tr>
+    <tr>
+    <td style="width:100%">-->
+    <details>
+    <summary><h3 style="display: inline-block">
+    Опції для "просунутих" користувачів:
+    </h3>
+    </summary>
+    <p style="padding:5px; border-radius:5px; margin-top:0px; margin-bottom:0px; display: inline-block">Опції для вибору початкових СК:</p><br>
+    <input type="checkbox" id="checkbox_service_inSRID">
+    <label for="checkbox_service_inSRID">Використовувати лише "службові" коди для <b>початкових</b> СК</label><br>
+
+     <input type="checkbox" id="checkbox_use_only_epsg_inSRID">
+    <label for="checkbox_use_only_epsg_inSRID">Використовувати <b>лише коди EPSG для початкових СК</b> (ігноруються "службові" коди СК, що передбачені в переліку inSRID <a href="https://dgm.gki.com.ua/docs/api/transform.html" target="_blank">API ДГМ</a>)</label><br>
+
+    <input type="checkbox" id="checkbox_unlimited_inSRID_list">
+    <label for="checkbox_unlimited_inSRID_list">Використовувати <b>будь-яку СК (зі службовими кодами) як початкову</b> (ігнорується список СК, що передбачені в переліку inSRID <a href="https://dgm.gki.com.ua/docs/api/transform.html" target="_blank">API ДГМ</a>) УВАГА! Точність і стабільність роботи API не гарантується!!!</label><br>
+
+    <input type="checkbox" id="checkbox_unlimited_inSRID_EPSG_list">
+    <label for="checkbox_unlimited_inSRID_EPSG_list">Використовувати <b>будь-яку СК (з кодами EPSG) як початкову</b> (ігнорується список СК, що передбачені в переліку inSRID <a href="https://dgm.gki.com.ua/docs/api/transform.html" target="_blank">API ДГМ</a>) УВАГА! Точність і стабільність роботи API не гарантується!!!</label><br>
+
+
+    <p style="padding:5px; border-radius:5px; margin-bottom:0px; display: inline-block">Опції для вибору кінцевих СК:</p><br>
+    <input type="checkbox" id="checkbox_service_outSRID">
+    <label for="checkbox_service_outSRID">Використовувати лише "службові" коди для <b>кінцевих</b> СК (за замовчуванням для кінцевих СК використовуються коди EPSG)</label><br>
+
+
+    <p style="padding:5px; border-radius:5px;margin-bottom:0px; display: inline-block">Інші опції:</p><br>
+
+    <input type="checkbox" id="checkbox_SRID_as_GET_parameter">
+    <label for="checkbox_SRID_as_GET_parameter">Надіслати коди СК як GET параметри (за замовчуванням коди СК надсилаються в тілі запиту body, як це показано в прикладах перерахунку)</label><br>
+
+
+    </details>
+<!--    </td>
+    </tr>
+    </table>-->
+
+    <hr>
+
+    <details>
+  <summary><h2 style="display: inline-block; padding:5px; margin:0px">Відповідь сервера:</summary>
+<pre id="response" style="background-color: #f9f9f9; border: 1px solid #ddd; padding: 10px;"></pre>
+</details>
+
+
+    <button onclick="saveToGeoJSON()">Зберегти у GeoJSON</button>
+<p></p>
+ <hr>
+    <p>Початковий код був створений Viktor, Bohdan2505 допрацював код і додав новий функціонал (вибір СК, опцій та інше)<p>
+</body>
+
+<script>
+
+let inSRID_select_element = document.getElementById("inSRID_select");
+
+let outSRID_select_element = document.getElementById("outSRID_select");
+
+let send_button = document.getElementById("send_button");
+
+send_button.addEventListener("click", (event) => {
+console.log(inSRID_select_element.value, outSRID_select_element.value, check_SRID_IS_get_parameter())
+uploadJsonFile(inSRID_select_element.value, outSRID_select_element.value, check_SRID_IS_get_parameter())
+
+});
+
+function check_SRID_IS_get_parameter() {
+
+ if (document.getElementById("checkbox_pretty_transformation").checked === true) {
+ return true
+ }
+ else if (document.getElementById("checkbox_SRID_as_GET_parameter").checked === true)  {
+ return true
+ }
+
+ else {
+ return false
+ }
+
+}
+
+
+function inSRID_select_element_onFocus () {
+
+inSRID_select_element.length = 0;
+
+console.log(inSRID_select_element.value)
+
+if (document.getElementById("checkbox_pretty_transformation").checked === true) {
+    for (x in api_srid_list) {
+    inSRID_select_element.add(new Option(api_srid_list[x]["text"], api_srid_list[x]["id"]));
+    }
+    for (x in sk63_srid_list) {
+    inSRID_select_element.add(new Option(sk63_srid_list[x]["text"], sk63_srid_list[x]["epsg"]));
+    }
+
+}
+
+else if (document.getElementById("checkbox_service_inSRID").checked === true) {
+    for (x in api_srid_list) {
+    inSRID_select_element.add(new Option(api_srid_list[x]["text"], api_srid_list[x]["id"]));
+    }
+    for (x in sk63_srid_list) {
+    inSRID_select_element.add(new Option(sk63_srid_list[x]["text"], sk63_srid_list[x]["id"]));
+    }
+}
+
+else if (document.getElementById("checkbox_use_only_epsg_inSRID").checked === true) {
+    for (x in api_srid_list) {
+    inSRID_select_element.add(new Option(api_srid_list[x]["text"], api_srid_list[x]["epsg"]));
+    }
+    for (x in sk63_srid_list) {
+    inSRID_select_element.add(new Option(sk63_srid_list[x]["text"], sk63_srid_list[x]["epsg"]));
+    }
+}
+
+else if (document.getElementById("checkbox_unlimited_inSRID_list").checked === true) {
+    for (x in api_srid_list) {
+    inSRID_select_element.add(new Option(api_srid_list[x]["text"], api_srid_list[x]["id"]));
+    }
+    for (x in sk63_srid_list) {
+    inSRID_select_element.add(new Option(sk63_srid_list[x]["text"], sk63_srid_list[x]["id"]));
+    }
+    for (x in other_srid_list) {
+    inSRID_select_element.add(new Option(other_srid_list[x]["text"], other_srid_list[x]["id"]));
+    }
+}
+
+else if (document.getElementById("checkbox_unlimited_inSRID_EPSG_list").checked === true) {
+    for (x in api_srid_list) {
+    inSRID_select_element.add(new Option(api_srid_list[x]["text"], api_srid_list[x]["epsg"]));
+    }
+    for (x in sk63_srid_list) {
+    inSRID_select_element.add(new Option(sk63_srid_list[x]["text"], sk63_srid_list[x]["epsg"]));
+    }
+    for (x in other_srid_list) {
+    inSRID_select_element.add(new Option(other_srid_list[x]["text"], other_srid_list[x]["epsg"]));
+    }
+}
+
+else { //за замовчуванням
+    for (x in api_srid_list) {
+    inSRID_select_element.add(new Option(api_srid_list[x]["text"], api_srid_list[x]["id"]));
+    }
+    for (x in sk63_srid_list) {
+    inSRID_select_element.add(new Option(sk63_srid_list[x]["text"], sk63_srid_list[x]["epsg"]));
+    }
+}
+}
+
+
+
+function outSRID_select_element_onFocus() {
+
+outSRID_select_element.length = 0;
+
+if (document.getElementById("checkbox_pretty_transformation").checked === true) {
+    for (x in api_srid_list) {
+    outSRID_select_element.add(new Option(api_srid_list[x]["text"], api_srid_list[x]["id"]));
+    }
+    for (x in sk63_srid_list) {
+    outSRID_select_element.add(new Option(sk63_srid_list[x]["text"], sk63_srid_list[x]["epsg"]));
+    }
+    for (x in other_srid_list) {
+    outSRID_select_element.add(new Option(other_srid_list[x]["text"], other_srid_list[x]["id"]));
+    }
+}
+
+
+else if (document.getElementById("checkbox_service_outSRID").checked === true) {
+    for (x in api_srid_list) {
+    outSRID_select_element.add(new Option(api_srid_list[x]["text"], api_srid_list[x]["id"]));
+    }
+    for (x in sk63_srid_list) {
+    outSRID_select_element.add(new Option(sk63_srid_list[x]["text"], sk63_srid_list[x]["id"]));
+    }
+    for (x in other_srid_list) {
+    outSRID_select_element.add(new Option(other_srid_list[x]["text"], other_srid_list[x]["id"]));
+    }
+}
+
+else {
+    for (x in api_srid_list) {
+    outSRID_select_element.add(new Option(api_srid_list[x]["text"], api_srid_list[x]["epsg"]));
+    }
+    for (x in sk63_srid_list) {
+    outSRID_select_element.add(new Option(sk63_srid_list[x]["text"], sk63_srid_list[x]["epsg"]));
+    }
+    for (x in other_srid_list) {
+    outSRID_select_element.add(new Option(other_srid_list[x]["text"], other_srid_list[x]["epsg"]));
+    }
+
+}
+
+}
+
+
+</script>
+</html>
